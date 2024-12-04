@@ -22,6 +22,21 @@ const Index = () => {
     newGame();
   }, []);
 
+  // Add keyboard event listener
+  useEffect(() => {
+    const handleKeyPress = (event: KeyboardEvent) => {
+      const key = event.key.toUpperCase();
+      if (/^[A-Z]$/.test(key) && !guessedLetters.has(key)) {
+        handleGuess(key);
+      }
+    };
+
+    window.addEventListener('keyup', handleKeyPress);
+    return () => {
+      window.removeEventListener('keyup', handleKeyPress);
+    };
+  }, [guessedLetters, word]); // Add dependencies for the effect
+
   const newGame = () => {
     const categories = Object.keys(WORDS) as Array<keyof typeof WORDS>;
     const newCategory = categories[Math.floor(Math.random() * categories.length)];
