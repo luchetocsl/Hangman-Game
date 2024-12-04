@@ -61,7 +61,7 @@ body {
 }
 
 .key {
-  background: var(--gray-4);
+  background: var(--surface-4);
   border: none;
   border-radius: var(--radius-2);
   padding: var(--size-2);
@@ -73,7 +73,7 @@ body {
 }
 
 .key:hover {
-  background: var(--gray-5);
+  background: var(--surface-5);
   transform: translateY(-2px);
 }
 
