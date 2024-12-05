@@ -73,7 +73,7 @@ body {
 }
 
 .key:hover {
-  background: var(--surface-5);
+  color: var(--gray-12);
   transform: translateY(-2px);
 }
 
