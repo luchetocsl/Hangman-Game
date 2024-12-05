@@ -71,8 +71,8 @@ const Index = () => {
       const newWrongLetters = new Set(wrongLetters).add(letter);
       setWrongLetters(newWrongLetters);
 
-      // Check lose
-      if (newWrongLetters.size >= 10) {
+      // Check lose - changed from 10 to 5 wrong guesses
+      if (newWrongLetters.size >= 5) {
         toast({
           title: "Game Over",
           description: `The word was ${word}. Starting a new game...`,
