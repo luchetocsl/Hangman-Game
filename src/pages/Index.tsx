@@ -1,7 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import HangmanDrawing from '../components/HangmanDrawing';
 import Keyboard from '../components/Keyboard';
-import { useToast } from '../hooks/use-toast';
+import {
+  AlertDialog,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogDescription,
+  AlertDialogAction,
+} from "@/components/ui/alert-dialog";
+import { Sparkles } from 'lucide-react';
 
 const WORDS = {
   animals: ['ELEPHANT', 'GIRAFFE', 'PENGUIN', 'DOLPHIN', 'KANGAROO'],
@@ -16,13 +24,17 @@ const Index = () => {
   const [correctLetters, setCorrectLetters] = useState<Set<string>>(new Set());
   const [wrongLetters, setWrongLetters] = useState<Set<string>>(new Set());
   const [score, setScore] = useState(0);
-  const { toast } = useToast();
+  const [showModal, setShowModal] = useState(false);
+  const [gameResult, setGameResult] = useState<{ title: string; description: string; isWin: boolean }>({
+    title: '',
+    description: '',
+    isWin: false
+  });
 
   useEffect(() => {
     newGame();
   }, []);
 
-  // Add keyboard event listener
   useEffect(() => {
     const handleKeyPress = (event: KeyboardEvent) => {
       const key = event.key.toUpperCase();
@@ -35,7 +47,7 @@ const Index = () => {
     return () => {
       window.removeEventListener('keyup', handleKeyPress);
     };
-  }, [guessedLetters, word]); // Add dependencies for the effect
+  }, [guessedLetters, word]);
 
   const newGame = () => {
     const categories = Object.keys(WORDS) as Array<keyof typeof WORDS>;
@@ -48,6 +60,7 @@ const Index = () => {
     setGuessedLetters(new Set());
     setCorrectLetters(new Set());
     setWrongLetters(new Set());
+    setShowModal(false);
   };
 
   const handleGuess = (letter: string) => {
@@ -58,27 +71,26 @@ const Index = () => {
       const newCorrectLetters = new Set(correctLetters).add(letter);
       setCorrectLetters(newCorrectLetters);
 
-      // Check win
       if (word.split('').every(l => newCorrectLetters.has(l))) {
-        toast({
-          title: "Congratulations!",
-          description: "You won! Starting a new game...",
+        setGameResult({
+          title: "🎉 Congratulations! 🎉",
+          description: `You won! The word was "${word}". Let's play another round!`,
+          isWin: true
         });
         setScore(score + 1);
-        setTimeout(newGame, 2000);
+        setShowModal(true);
       }
     } else {
       const newWrongLetters = new Set(wrongLetters).add(letter);
       setWrongLetters(newWrongLetters);
 
-      // Check lose - changed from 10 to 5 wrong guesses
       if (newWrongLetters.size >= 5) {
-        toast({
+        setGameResult({
           title: "Game Over",
-          description: `The word was ${word}. Starting a new game...`,
-          variant: "destructive",
+          description: `The word was "${word}". Better luck next time!`,
+          isWin: false
         });
-        setTimeout(newGame, 2000);
+        setShowModal(true);
       }
     }
   };
@@ -108,6 +120,33 @@ const Index = () => {
         correctLetters={correctLetters}
         wrongLetters={wrongLetters}
       />
+
+      <AlertDialog open={showModal} onOpenChange={setShowModal}>
+        <AlertDialogContent className="border-4 border-primary">
+          <AlertDialogHeader>
+            <AlertDialogTitle className={`text-2xl font-bold flex items-center justify-center gap-2 ${gameResult.isWin ? 'text-green-500' : 'text-red-500'}`}>
+              {gameResult.isWin && <Sparkles className="h-6 w-6" />}
+              {gameResult.title}
+              {gameResult.isWin && <Sparkles className="h-6 w-6" />}
+            </AlertDialogTitle>
+            <AlertDialogDescription className="text-lg text-center mt-4">
+              {gameResult.description}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <div className="flex justify-center mt-6">
+            <AlertDialogAction 
+              onClick={newGame}
+              className={`px-8 py-3 text-lg font-semibold ${
+                gameResult.isWin 
+                  ? 'bg-green-500 hover:bg-green-600' 
+                  : 'bg-blue-500 hover:bg-blue-600'
+              }`}
+            >
+              Play Again
+            </AlertDialogAction>
+          </div>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };
