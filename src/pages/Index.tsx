@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import HangmanDrawing from '../components/HangmanDrawing';
 import Keyboard from '../components/Keyboard';
 import { useToast } from '../hooks/use-toast';
+import { Navigation2, RotateCw } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import {
   AlertDialog,
   AlertDialogContent,
@@ -74,7 +76,21 @@ const Index = () => {
 
   return (
     <div className="container">
-      <h1 className="game-title">Hangman</h1>
+      <nav className="flex items-center justify-between mb-8 bg-white/50 backdrop-blur-sm rounded-lg p-4 shadow-sm">
+        <div className="flex items-center gap-2">
+          <Navigation2 className="h-6 w-6 text-primary" />
+          <span className="text-xl font-bold">Hangman</span>
+        </div>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={newGame}
+          className="flex items-center gap-2"
+        >
+          <RotateCw className="h-4 w-4" />
+          New Word
+        </Button>
+      </nav>
       
       <div className="game-info">
         <div className="score">Score: {score}</div>
