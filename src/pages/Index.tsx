@@ -1,15 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import HangmanDrawing from '../components/HangmanDrawing';
 import Keyboard from '../components/Keyboard';
-import {
-  AlertDialog,
-  AlertDialogContent,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogDescription,
-  AlertDialogAction,
-} from "@/components/ui/alert-dialog";
-import { Sparkles } from 'lucide-react';
+import { useToast } from '../hooks/use-toast';
 
 const WORDS = {
   animals: ['ELEPHANT', 'GIRAFFE', 'PENGUIN', 'DOLPHIN', 'KANGAROO'],
@@ -24,17 +16,13 @@ const Index = () => {
   const [correctLetters, setCorrectLetters] = useState<Set<string>>(new Set());
   const [wrongLetters, setWrongLetters] = useState<Set<string>>(new Set());
   const [score, setScore] = useState(0);
-  const [showModal, setShowModal] = useState(false);
-  const [gameResult, setGameResult] = useState<{ title: string; description: string; isWin: boolean }>({
-    title: '',
-    description: '',
-    isWin: false
-  });
+  const { toast } = useToast();
 
   useEffect(() => {
     newGame();
   }, []);
 
+  // Add keyboard event listener
   useEffect(() => {
     const handleKeyPress = (event: KeyboardEvent) => {
       const key = event.key.toUpperCase();
@@ -47,7 +35,7 @@ const Index = () => {
     return () => {
       window.removeEventListener('keyup', handleKeyPress);
     };
-  }, [guessedLetters, word]);
+  }, [guessedLetters, word]); // Add dependencies for the effect
 
   const newGame = () => {
     const categories = Object.keys(WORDS) as Array<keyof typeof WORDS>;
@@ -60,7 +48,6 @@ const Index = () => {
     setGuessedLetters(new Set());
     setCorrectLetters(new Set());
     setWrongLetters(new Set());
-    setShowModal(false);
   };
 
   const handleGuess = (letter: string) => {
@@ -71,32 +58,33 @@ const Index = () => {
       const newCorrectLetters = new Set(correctLetters).add(letter);
       setCorrectLetters(newCorrectLetters);
 
+      // Check win
       if (word.split('').every(l => newCorrectLetters.has(l))) {
-        setGameResult({
-          title: "🎉 Congratulations! 🎉",
-          description: `You won! The word was "${word}". Let's play another round!`,
-          isWin: true
+        toast({
+          title: "Congratulations!",
+          description: "You won! Starting a new game...",
         });
         setScore(score + 1);
-        setShowModal(true);
+        setTimeout(newGame, 2000);
       }
     } else {
       const newWrongLetters = new Set(wrongLetters).add(letter);
       setWrongLetters(newWrongLetters);
 
+      // Check lose - changed from 10 to 5 wrong guesses
       if (newWrongLetters.size >= 5) {
-        setGameResult({
+        toast({
           title: "Game Over",
-          description: `The word was "${word}". Better luck next time!`,
-          isWin: false
+          description: `The word was ${word}. Starting a new game...`,
+          variant: "destructive",
         });
-        setShowModal(true);
+        setTimeout(newGame, 2000);
       }
     }
   };
 
   return (
-    <div className="container relative">
+    <div className="container">
       <h1 className="game-title">Hangman</h1>
       
       <div className="game-info">
@@ -120,35 +108,6 @@ const Index = () => {
         correctLetters={correctLetters}
         wrongLetters={wrongLetters}
       />
-
-      <AlertDialog open={showModal} onOpenChange={setShowModal}>
-        <AlertDialogContent className="fixed inset-0 flex items-center justify-center">
-          <div className="bg-white p-6 rounded-lg shadow-xl border-4 border-primary max-w-md w-full mx-4">
-            <AlertDialogHeader>
-              <AlertDialogTitle className={`text-2xl font-bold flex items-center justify-center gap-2 ${gameResult.isWin ? 'text-green-500' : 'text-red-500'}`}>
-                {gameResult.isWin && <Sparkles className="h-6 w-6" />}
-                {gameResult.title}
-                {gameResult.isWin && <Sparkles className="h-6 w-6" />}
-              </AlertDialogTitle>
-              <AlertDialogDescription className="text-lg text-center mt-4">
-                {gameResult.description}
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <div className="flex justify-center mt-6">
-              <AlertDialogAction 
-                onClick={newGame}
-                className={`px-8 py-3 text-lg font-semibold ${
-                  gameResult.isWin 
-                    ? 'bg-green-500 hover:bg-green-600' 
-                    : 'bg-blue-500 hover:bg-blue-600'
-                } text-white rounded-lg transform transition-transform hover:scale-105`}
-              >
-                Play Again
-              </AlertDialogAction>
-            </div>
-          </div>
-        </AlertDialogContent>
-      </AlertDialog>
     </div>
   );
 };
