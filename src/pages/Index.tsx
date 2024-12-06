@@ -96,7 +96,7 @@ const Index = () => {
   };
 
   return (
-    <div className="container">
+    <div className="container relative">
       <h1 className="game-title">Hangman</h1>
       
       <div className="game-info">
@@ -122,28 +122,30 @@ const Index = () => {
       />
 
       <AlertDialog open={showModal} onOpenChange={setShowModal}>
-        <AlertDialogContent className="border-4 border-primary">
-          <AlertDialogHeader>
-            <AlertDialogTitle className={`text-2xl font-bold flex items-center justify-center gap-2 ${gameResult.isWin ? 'text-green-500' : 'text-red-500'}`}>
-              {gameResult.isWin && <Sparkles className="h-6 w-6" />}
-              {gameResult.title}
-              {gameResult.isWin && <Sparkles className="h-6 w-6" />}
-            </AlertDialogTitle>
-            <AlertDialogDescription className="text-lg text-center mt-4">
-              {gameResult.description}
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <div className="flex justify-center mt-6">
-            <AlertDialogAction 
-              onClick={newGame}
-              className={`px-8 py-3 text-lg font-semibold ${
-                gameResult.isWin 
-                  ? 'bg-green-500 hover:bg-green-600' 
-                  : 'bg-blue-500 hover:bg-blue-600'
-              }`}
-            >
-              Play Again
-            </AlertDialogAction>
+        <AlertDialogContent className="fixed inset-0 flex items-center justify-center">
+          <div className="bg-white p-6 rounded-lg shadow-xl border-4 border-primary max-w-md w-full mx-4">
+            <AlertDialogHeader>
+              <AlertDialogTitle className={`text-2xl font-bold flex items-center justify-center gap-2 ${gameResult.isWin ? 'text-green-500' : 'text-red-500'}`}>
+                {gameResult.isWin && <Sparkles className="h-6 w-6" />}
+                {gameResult.title}
+                {gameResult.isWin && <Sparkles className="h-6 w-6" />}
+              </AlertDialogTitle>
+              <AlertDialogDescription className="text-lg text-center mt-4">
+                {gameResult.description}
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <div className="flex justify-center mt-6">
+              <AlertDialogAction 
+                onClick={newGame}
+                className={`px-8 py-3 text-lg font-semibold ${
+                  gameResult.isWin 
+                    ? 'bg-green-500 hover:bg-green-600' 
+                    : 'bg-blue-500 hover:bg-blue-600'
+                } text-white rounded-lg transform transition-transform hover:scale-105`}
+              >
+                Play Again
+              </AlertDialogAction>
+            </div>
           </div>
         </AlertDialogContent>
       </AlertDialog>
