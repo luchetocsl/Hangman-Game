@@ -2,6 +2,15 @@ import React, { useState, useEffect } from 'react';
 import HangmanDrawing from '../components/HangmanDrawing';
 import Keyboard from '../components/Keyboard';
 import { useToast } from '../hooks/use-toast';
+import {
+  AlertDialog,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogAction,
+} from "@/components/ui/alert-dialog";
 
 const WORDS = {
   animals: ['ELEPHANT', 'GIRAFFE', 'PENGUIN', 'DOLPHIN', 'KANGAROO'],
@@ -16,26 +25,13 @@ const Index = () => {
   const [correctLetters, setCorrectLetters] = useState<Set<string>>(new Set());
   const [wrongLetters, setWrongLetters] = useState<Set<string>>(new Set());
   const [score, setScore] = useState(0);
+  const [showWinDialog, setShowWinDialog] = useState(false);
+  const [showLoseDialog, setShowLoseDialog] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
     newGame();
   }, []);
-
-  // Add keyboard event listener
-  useEffect(() => {
-    const handleKeyPress = (event: KeyboardEvent) => {
-      const key = event.key.toUpperCase();
-      if (/^[A-Z]$/.test(key) && !guessedLetters.has(key)) {
-        handleGuess(key);
-      }
-    };
-
-    window.addEventListener('keyup', handleKeyPress);
-    return () => {
-      window.removeEventListener('keyup', handleKeyPress);
-    };
-  }, [guessedLetters, word]); // Add dependencies for the effect
 
   const newGame = () => {
     const categories = Object.keys(WORDS) as Array<keyof typeof WORDS>;
@@ -48,6 +44,8 @@ const Index = () => {
     setGuessedLetters(new Set());
     setCorrectLetters(new Set());
     setWrongLetters(new Set());
+    setShowWinDialog(false);
+    setShowLoseDialog(false);
   };
 
   const handleGuess = (letter: string) => {
@@ -60,25 +58,16 @@ const Index = () => {
 
       // Check win
       if (word.split('').every(l => newCorrectLetters.has(l))) {
-        toast({
-          title: "Congratulations!",
-          description: "You won! Starting a new game...",
-        });
         setScore(score + 1);
-        setTimeout(newGame, 2000);
+        setShowWinDialog(true);
       }
     } else {
       const newWrongLetters = new Set(wrongLetters).add(letter);
       setWrongLetters(newWrongLetters);
 
-      // Check lose - changed from 10 to 5 wrong guesses
+      // Check lose
       if (newWrongLetters.size >= 5) {
-        toast({
-          title: "Game Over",
-          description: `The word was ${word}. Starting a new game...`,
-          variant: "destructive",
-        });
-        setTimeout(newGame, 2000);
+        setShowLoseDialog(true);
       }
     }
   };
@@ -108,6 +97,49 @@ const Index = () => {
         correctLetters={correctLetters}
         wrongLetters={wrongLetters}
       />
+
+      <AlertDialog open={showWinDialog} onOpenChange={setShowWinDialog}>
+        <AlertDialogContent className="bg-gradient-to-r from-purple-500 to-pink-500 border-4 border-yellow-400 shadow-xl transform transition-all">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-3xl text-white text-center font-bold mb-4">
+              🎉 Congratulations! 🎉
+            </AlertDialogTitle>
+            <AlertDialogDescription className="text-white text-xl text-center">
+              <div className="animate-bounce mb-4">🏆</div>
+              You won! Your score is now {score}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogAction 
+              onClick={newGame}
+              className="bg-yellow-400 hover:bg-yellow-500 text-purple-900 font-bold py-2 px-6 rounded-full transform transition-transform hover:scale-105 active:scale-95"
+            >
+              Play Again! 🎮
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      <AlertDialog open={showLoseDialog} onOpenChange={setShowLoseDialog}>
+        <AlertDialogContent className="bg-gradient-to-r from-gray-800 to-gray-900 border-2 border-red-500">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-2xl text-white text-center">
+              Game Over
+            </AlertDialogTitle>
+            <AlertDialogDescription className="text-gray-300 text-center">
+              The word was {word}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogAction 
+              onClick={newGame}
+              className="bg-red-500 hover:bg-red-600 text-white"
+            >
+              Try Again
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };
