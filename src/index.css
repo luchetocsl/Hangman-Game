@@ -56,7 +56,7 @@ body {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(40px, 1fr));
   gap: var(--size-2);
-  max-width: 600px;
+  width: 620px;
   margin: 0 auto;
 }
 
