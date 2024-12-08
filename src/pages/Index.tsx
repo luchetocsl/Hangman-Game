@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import HangmanDrawing from '../components/HangmanDrawing';
 import Keyboard from '../components/Keyboard';
 import { useToast } from '../hooks/use-toast';
-import { Navigation2, RotateCw } from "lucide-react";
+import { Navigation2, RotateCw, Heart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   AlertDialog,
@@ -91,6 +91,8 @@ const Index = () => {
     return () => window.removeEventListener('keydown', handleKeyPress);
   }, [handleGuess]);
 
+  const remainingChances = 5 - wrongLetters.size;
+
   return (
     <div className="container">
       <nav className="flex items-center justify-between mb-8 bg-white/50 backdrop-blur-sm rounded-lg p-4 shadow-sm">
@@ -109,9 +111,15 @@ const Index = () => {
         </Button>
       </nav>
       
-      <div className="game-info">
+      <div className="game-info mb-4">
         <div className="score">Score: {score}</div>
         <div className="category">Category: {category}</div>
+        <div className="chances flex items-center gap-2 mt-2">
+          <Heart className="h-5 w-5 text-red-500" />
+          <span className="text-lg font-semibold">
+            {remainingChances} {remainingChances === 1 ? 'chance' : 'chances'} left
+          </span>
+        </div>
       </div>
 
       <HangmanDrawing wrongGuesses={wrongLetters.size} />
