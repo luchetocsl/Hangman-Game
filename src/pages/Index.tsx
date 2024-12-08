@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import HangmanDrawing from '../components/HangmanDrawing';
 import Keyboard from '../components/Keyboard';
 import { useToast } from '../hooks/use-toast';
@@ -31,33 +31,34 @@ const Index = () => {
   const [showLoseDialog, setShowLoseDialog] = useState(false);
   const { toast } = useToast();
 
-  const handleGuess = (letter: string) => {
+  const handleGuess = useCallback((letter: string) => {
     if (guessedLetters.has(letter)) return;
     
-    const newGuessedLetters = new Set(guessedLetters).add(letter);
-    setGuessedLetters(newGuessedLetters);
+    setGuessedLetters(prev => new Set(prev).add(letter));
 
     if (word.includes(letter)) {
-      const newCorrectLetters = new Set(correctLetters).add(letter);
-      setCorrectLetters(newCorrectLetters);
-
-      // Check win
-      if (word.split('').every(l => newCorrectLetters.has(l))) {
-        setScore(score + 1);
-        setShowWinDialog(true);
-      }
+      setCorrectLetters(prev => {
+        const newCorrectLetters = new Set(prev).add(letter);
+        // Check win condition
+        if (word.split('').every(l => newCorrectLetters.has(l))) {
+          setScore(s => s + 1);
+          setShowWinDialog(true);
+        }
+        return newCorrectLetters;
+      });
     } else {
-      const newWrongLetters = new Set(wrongLetters).add(letter);
-      setWrongLetters(newWrongLetters);
-
-      // Check lose
-      if (newWrongLetters.size >= 5) {
-        setShowLoseDialog(true);
-      }
+      setWrongLetters(prev => {
+        const newWrongLetters = new Set(prev).add(letter);
+        // Check lose condition
+        if (newWrongLetters.size >= 5) {
+          setShowLoseDialog(true);
+        }
+        return newWrongLetters;
+      });
     }
-  };
+  }, [word, guessedLetters]);
 
-  const newGame = () => {
+  const newGame = useCallback(() => {
     const categories = Object.keys(WORDS) as Array<keyof typeof WORDS>;
     const newCategory = categories[Math.floor(Math.random() * categories.length)];
     const words = WORDS[newCategory];
@@ -70,12 +71,14 @@ const Index = () => {
     setWrongLetters(new Set());
     setShowWinDialog(false);
     setShowLoseDialog(false);
-  };
+  }, []);
 
+  // Initialize game
   useEffect(() => {
     newGame();
   }, []);
 
+  // Keyboard event listener
   useEffect(() => {
     const handleKeyPress = (event: KeyboardEvent) => {
       const key = event.key.toUpperCase();
@@ -85,10 +88,8 @@ const Index = () => {
     };
 
     window.addEventListener('keydown', handleKeyPress);
-    return () => {
-      window.removeEventListener('keydown', handleKeyPress);
-    };
-  }, [word]); // Only re-attach the listener when the word changes
+    return () => window.removeEventListener('keydown', handleKeyPress);
+  }, [handleGuess]);
 
   return (
     <div className="container">
