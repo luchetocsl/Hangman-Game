@@ -33,7 +33,19 @@ const Index = () => {
 
   useEffect(() => {
     newGame();
-  }, []);
+    
+    const handleKeyPress = (event: KeyboardEvent) => {
+      const key = event.key.toUpperCase();
+      if (/^[A-Z]$/.test(key) && !guessedLetters.has(key)) {
+        handleGuess(key);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyPress);
+    return () => {
+      window.removeEventListener('keydown', handleKeyPress);
+    };
+  }, [guessedLetters]);
 
   const newGame = () => {
     const categories = Object.keys(WORDS) as Array<keyof typeof WORDS>;
