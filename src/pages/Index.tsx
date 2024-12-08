@@ -31,38 +31,9 @@ const Index = () => {
   const [showLoseDialog, setShowLoseDialog] = useState(false);
   const { toast } = useToast();
 
-  useEffect(() => {
-    newGame();
-    
-    const handleKeyPress = (event: KeyboardEvent) => {
-      const key = event.key.toUpperCase();
-      if (/^[A-Z]$/.test(key) && !guessedLetters.has(key)) {
-        handleGuess(key);
-      }
-    };
-
-    window.addEventListener('keydown', handleKeyPress);
-    return () => {
-      window.removeEventListener('keydown', handleKeyPress);
-    };
-  }, [guessedLetters]);
-
-  const newGame = () => {
-    const categories = Object.keys(WORDS) as Array<keyof typeof WORDS>;
-    const newCategory = categories[Math.floor(Math.random() * categories.length)];
-    const words = WORDS[newCategory];
-    const newWord = words[Math.floor(Math.random() * words.length)];
-    
-    setCategory(newCategory);
-    setWord(newWord);
-    setGuessedLetters(new Set());
-    setCorrectLetters(new Set());
-    setWrongLetters(new Set());
-    setShowWinDialog(false);
-    setShowLoseDialog(false);
-  };
-
   const handleGuess = (letter: string) => {
+    if (guessedLetters.has(letter)) return;
+    
     const newGuessedLetters = new Set(guessedLetters).add(letter);
     setGuessedLetters(newGuessedLetters);
 
@@ -85,6 +56,39 @@ const Index = () => {
       }
     }
   };
+
+  const newGame = () => {
+    const categories = Object.keys(WORDS) as Array<keyof typeof WORDS>;
+    const newCategory = categories[Math.floor(Math.random() * categories.length)];
+    const words = WORDS[newCategory];
+    const newWord = words[Math.floor(Math.random() * words.length)];
+    
+    setCategory(newCategory);
+    setWord(newWord);
+    setGuessedLetters(new Set());
+    setCorrectLetters(new Set());
+    setWrongLetters(new Set());
+    setShowWinDialog(false);
+    setShowLoseDialog(false);
+  };
+
+  useEffect(() => {
+    newGame();
+  }, []);
+
+  useEffect(() => {
+    const handleKeyPress = (event: KeyboardEvent) => {
+      const key = event.key.toUpperCase();
+      if (/^[A-Z]$/.test(key)) {
+        handleGuess(key);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyPress);
+    return () => {
+      window.removeEventListener('keydown', handleKeyPress);
+    };
+  }, [word]); // Only re-attach the listener when the word changes
 
   return (
     <div className="container">
