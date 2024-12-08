@@ -49,7 +49,7 @@ const Index = () => {
     } else {
       setWrongLetters(prev => {
         const newWrongLetters = new Set(prev).add(letter);
-        // Check lose condition
+        // Check lose condition after 5 mistakes instead of 10
         if (newWrongLetters.size >= 5) {
           setShowLoseDialog(true);
         }
