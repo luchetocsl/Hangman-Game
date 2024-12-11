@@ -3,6 +3,7 @@ import HangmanDrawing from '../components/HangmanDrawing';
 import Keyboard from '../components/Keyboard';
 import GameNavigation from '../components/GameNavigation';
 import GameInfo from '../components/GameInfo';
+import WordDisplay from '../components/WordDisplay';
 import {
   AlertDialog,
   AlertDialogContent,
@@ -85,7 +86,6 @@ const Index = () => {
     if (word.includes(letter)) {
       setCorrectLetters(prev => {
         const newCorrectLetters = new Set(prev).add(letter);
-        // Check win condition
         if (word.split('').every(l => newCorrectLetters.has(l))) {
           setScore(s => s + 1);
           setShowWinDialog(true);
@@ -95,7 +95,6 @@ const Index = () => {
     } else {
       setWrongLetters(prev => {
         const newWrongLetters = new Set(prev).add(letter);
-        // Check lose condition after 5 mistakes instead of 10
         if (newWrongLetters.size >= 5) {
           setShowLoseDialog(true);
         }
@@ -150,13 +149,7 @@ const Index = () => {
 
         <HangmanDrawing wrongGuesses={wrongLetters.size} />
 
-        <div className="word-display">
-          {word.split('').map((letter, index) => (
-            <div key={index} className="letter-box">
-              {guessedLetters.has(letter) ? letter : ''}
-            </div>
-          ))}
-        </div>
+        <WordDisplay word={word} guessedLetters={guessedLetters} />
 
         <Keyboard
           onGuess={handleGuess}
