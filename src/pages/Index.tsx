@@ -15,9 +15,57 @@ import {
 } from "@/components/ui/alert-dialog";
 
 const WORDS = {
-  animals: ['ELEPHANT', 'GIRAFFE', 'PENGUIN', 'DOLPHIN', 'KANGAROO'],
-  countries: ['FRANCE', 'JAPAN', 'BRAZIL', 'CANADA', 'EGYPT'],
-  fruits: ['APPLE', 'BANANA', 'ORANGE', 'MANGO', 'GRAPE'],
+  animals: [
+    'ELEPHANT',
+    'GIRAFFE',
+    'PENGUIN',
+    'DOLPHIN',
+    'KANGAROO',
+    'LION',
+    'TIGER',
+    'ZEBRA',
+    'CHEETAH',
+    'PANDA',
+    'LEOPARD',
+    'HIPPOPOTAMUS',
+    'RACCOON',
+    'FLAMINGO',
+    'OSTRICH'
+  ],
+  countries: [
+    'FRANCE',
+    'JAPAN',
+    'BRAZIL',
+    'CANADA',
+    'EGYPT',
+    'GERMANY',
+    'AUSTRALIA',
+    'INDIA',
+    'ITALY',
+    'SPAIN',
+    'MEXICO',
+    'NETHERLANDS',
+    'SWITZERLAND',
+    'SWEDEN',
+    'NORWAY'
+  ],
+  fruits: [
+    'APPLE',
+    'BANANA',
+    'ORANGE',
+    'MANGO',
+    'GRAPE',
+    'PINEAPPLE',
+    'STRAWBERRY',
+    'CHERRY',
+    'PEACH',
+    'WATERMELON',
+    'KIWI',
+    'PAPAYA',
+    'BLUEBERRY',
+    'RASPBERRY',
+    'BLACKBERRY'
+  ],
 };
 
 const Index = () => {
