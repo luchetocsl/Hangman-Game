@@ -1,9 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import HangmanDrawing from '../components/HangmanDrawing';
 import Keyboard from '../components/Keyboard';
-import { useToast } from '../hooks/use-toast';
-import { Navigation2, RotateCw, Heart } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import GameNavigation from '../components/GameNavigation';
+import GameInfo from '../components/GameInfo';
 import {
   AlertDialog,
   AlertDialogContent,
@@ -77,7 +76,6 @@ const Index = () => {
   const [score, setScore] = useState(0);
   const [showWinDialog, setShowWinDialog] = useState(false);
   const [showLoseDialog, setShowLoseDialog] = useState(false);
-  const { toast } = useToast();
 
   const handleGuess = useCallback((letter: string) => {
     if (guessedLetters.has(letter)) return;
@@ -121,12 +119,10 @@ const Index = () => {
     setShowLoseDialog(false);
   }, []);
 
-  // Initialize game
   useEffect(() => {
     newGame();
   }, []);
 
-  // Keyboard event listener
   useEffect(() => {
     const handleKeyPress = (event: KeyboardEvent) => {
       const key = event.key.toUpperCase();
@@ -142,36 +138,15 @@ const Index = () => {
   const remainingChances = 5 - wrongLetters.size;
 
   return (
-    <div className="container max-w-4xl mx-auto px-4">
-      <nav className="fixed top-0 left-0 right-0 z-10 bg-white/50 backdrop-blur-sm shadow-sm">
-        <div className="max-w-4xl mx-auto px-4 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Navigation2 className="h-6 w-6 text-primary" />
-            <span className="text-xl font-bold">Hangman</span>
-          </div>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={newGame}
-            className="flex items-center gap-2"
-          >
-            <RotateCw className="h-4 w-4" />
-            New Word
-          </Button>
-        </div>
-      </nav>
+    <>
+      <GameNavigation onNewGame={newGame} />
       
       <main className="mt-24 flex flex-col items-center gap-6">
-        <div className="game-info w-full max-w-md mx-auto text-center">
-          <div className="score text-lg font-semibold mb-2">Score: {score}</div>
-          <div className="category text-md text-primary mb-2">Category: {category}</div>
-          <div className="chances inline-flex items-center justify-center gap-2">
-            <Heart className="h-5 w-5 text-red-500" fill="currentColor" />
-            <span className="text-lg font-semibold">
-              {remainingChances} {remainingChances === 1 ? 'chance' : 'chances'} left
-            </span>
-          </div>
-        </div>
+        <GameInfo 
+          score={score}
+          category={category}
+          remainingChances={remainingChances}
+        />
 
         <HangmanDrawing wrongGuesses={wrongLetters.size} />
 
@@ -233,7 +208,7 @@ const Index = () => {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-    </div>
+    </>
   );
 };
 
