@@ -1,5 +1,8 @@
 @import "open-props/style";
-@import "open-props/normalize";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 :root {
   --game-bg: var(--gray-0);
@@ -70,31 +73,36 @@ body {
   color: var(--gray-9);
   cursor: pointer;
   transition: all var(--transition-ease-out);
+  background: var(--gray-2);
 }
 
 .key:hover {
   color: var(--gray-12);
   transform: translateY(-2px);
+  box-shadow: 0 2px 0 var(--gray-4);
 }
 
 .key:disabled {
   opacity: 0.5;
   cursor: not-allowed;
   transform: none;
+  background: var(--gray-2);
 }
 
 .key.used {
-  background: var(--surface-1);
+  background: var(--gray-2);
+  box-shadow: none;
 }
 
 .key.correct {
-  background: var(--success);
-  color: white;
+  background: var(--gray-2);
+  color: var(--gray-12);
+  text-decoration: line-through;
 }
 
 .key.wrong {
-  background: var(--error);
-  color: white;
+  background: var(--red-9);
+  color: var(--red-2);
 }
 
 .hangman-drawing {
